@@ -1,0 +1,114 @@
+
+#include <iostream>
+using namespace std;
+
+class Warehouse {
+public:
+    int weight[100];
+    int n, k;
+    int swaps = 0;
+    int skipped = 0;
+
+    void swapValues(int &a, int &b) {
+        if (&a != &b) {
+            int temp = a;
+            a = b;
+            b = temp;
+            swaps++;
+        }
+    }
+
+    int partition(int low, int high) {
+        int pivot = weight[high];
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (weight[j] <= pivot) {
+                i++;
+                swapValues(weight[i], weight[j]);
+            }
+        }
+
+        swapValues(weight[i + 1], weight[high]);
+
+        int pos = i + 1;
+
+        cout << "\nArray after placing reference parcel: ";
+        for (int j = 0; j < n; j++) {
+            cout << weight[j] << " ";
+        }
+
+        cout << "\nFinal position: " << pos + 1 << endl;
+
+        return pos;
+    }
+
+    int quickSelect(int low, int high, int target) {
+        if (low > high) {
+            return -1;
+        }
+
+        if (low == high) {
+            return weight[low];
+        }
+
+        int pos = partition(low, high);
+
+        if (pos == target) {
+            skipped += 2;
+            return weight[pos];
+        }
+        else if (target < pos) {
+            if (pos + 1 <= high)
+                skipped++;
+
+            return quickSelect(low, pos - 1, target);
+        }
+        else {
+            if (low <= pos - 1)
+                skipped++;
+
+            return quickSelect(pos + 1, high, target);
+        }
+    }
+
+    void input() {
+        cout << "Enter number of parcels: ";
+        cin >> n;
+
+        if (n < 1 || n > 100) {
+            cout << "Invalid number of parcels!";
+            return;
+        }
+
+        cout << "Enter parcel weights:\n";
+
+        for (int i = 0; i < n; i++) {
+            cin >> weight[i];
+        }
+
+        cout << "Enter K: ";
+        cin >> k;
+
+        if (k < 1 || k > n) {
+            cout << "Invalid K!";
+            return;
+        }
+
+        cout << "\nQUICK SELECT PROCESS\n";
+
+        int answer = quickSelect(0, n - 1, k - 1);
+
+        cout << "\nRESULT\n";
+        cout << "K-th lightest parcel: " << answer << endl;
+        cout << "Total swaps: " << swaps << endl;
+        cout << "Groups skipped: " << skipped << endl;
+    }
+};
+
+int main() {
+    Warehouse w;
+    w.input();
+
+    return 0;
+}

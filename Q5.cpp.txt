@@ -1,0 +1,135 @@
+
+#include <iostream>
+using namespace std;
+
+class University {
+public:
+    int marks[100];
+    int n, k;
+    int swaps = 0;
+    int skipped = 0;
+
+    void swapValues(int &a, int &b) {
+        if (&a != &b) {
+            int temp = a;
+            a = b;
+            b = temp;
+            swaps++;
+        }
+    }
+
+    int partition(int low, int high) {
+        int pivot = marks[low];
+        int i = low + 1;
+        int j = high;
+
+        while (i <= j) {
+            while (i <= high && marks[i] > pivot) {
+                i++;
+            }
+
+            while (j > low && marks[j] <= pivot) {
+                j--;
+            }
+
+            if (i < j) {
+                swapValues(marks[i], marks[j]);
+                i++;
+                j--;
+            }
+        }
+
+        swapValues(marks[low], marks[j]);
+
+        cout << "\nArray after placing reference student: ";
+
+        for (int x = 0; x < n; x++) {
+            cout << marks[x] << " ";
+        }
+
+        cout << "\nFinal position: " << j + 1 << endl;
+
+        return j;
+    }
+
+    void quickSelect(int low, int high, int target) {
+        if (low >= high) {
+            return;
+        }
+
+        int pos = partition(low, high);
+
+        if (pos == target) {
+            if (pos + 1 <= high)
+                skipped++;
+
+            if (pos > low)
+                skipped++;
+
+            return;
+        }
+
+        else if (pos > target) {
+            if (pos + 1 <= high)
+                skipped++;
+
+            quickSelect(low, pos - 1, target);
+        }
+
+        else {
+            if (pos > low)
+                skipped++;
+
+            quickSelect(pos + 1, high, target);
+        }
+    }
+
+    void input() {
+        cout << "Enter number of students: ";
+        cin >> n;
+
+        if (n < 1 || n > 100) {
+            cout << "Invalid number of students!";
+            return;
+        }
+
+        cout << "Enter marks of students:\n";
+
+        for (int i = 0; i < n; i++) {
+            cin >> marks[i];
+
+            if (marks[i] < 0 || marks[i] > 100) {
+                cout << "Invalid marks!";
+                return;
+            }
+        }
+
+        cout << "Enter K: ";
+        cin >> k;
+
+        if (k < 1 || k > n) {
+            cout << "Invalid K!";
+            return;
+        }
+
+        cout << "\nQUICK SELECT PROCESS\n";
+
+        quickSelect(0, n - 1, k - 1);
+
+        cout << "\nTOP " << k << " STUDENTS\n";
+
+        for (int i = 0; i < k; i++) {
+            cout << marks[i] << " ";
+        }
+
+        cout << "\n\nTotal swaps: " << swaps << endl;
+        cout << "Groups skipped: " << skipped << endl;
+    }
+};
+
+int main() {
+    University u;
+    u.input();
+
+    return 0;
+}

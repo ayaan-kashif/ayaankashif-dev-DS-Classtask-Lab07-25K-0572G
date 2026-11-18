@@ -1,0 +1,126 @@
+
+#include <iostream>
+using namespace std;
+
+class Courier {
+public:
+    int codes[100];
+    int n;
+
+    void input() {
+        cout << "Enter number of codes: ";
+        cin >> n;
+
+        if (n < 1 || n > 100) {
+            cout << "Invalid number of codes!";
+            return;
+        }
+
+        cout << "Enter tracking codes:\n";
+
+        for (int i = 0; i < n; i++) {
+            cin >> codes[i];
+
+            if (codes[i] < 1 || codes[i] > 99999) {
+                cout << "Invalid code!";
+                return;
+            }
+        }
+
+        radixSort();
+        printDuplicates();
+    }
+
+    void radixSort() {
+        int max = codes[0];
+
+        for (int i = 1; i < n; i++) {
+            if (codes[i] > max) {
+                max = codes[i];
+            }
+        }
+
+        int output[100];
+        int exp = 1;
+        int round = 1;
+
+        while (max / exp > 0) {
+            int boxes[10][100];
+            int count[10] = {0};
+
+            for (int i = 0; i < n; i++) {
+                int digit = (codes[i] / exp) % 10;
+                boxes[digit][count[digit]++] = codes[i];
+            }
+
+            cout << "\n===== ROUND " << round << " =====\n";
+
+            for (int i = 0; i < 10; i++) {
+                cout << "Box " << i << ": ";
+
+                for (int j = 0; j < count[i]; j++) {
+                    cout << boxes[i][j] << " ";
+                }
+
+                cout << endl;
+            }
+
+            int index = 0;
+
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < count[i]; j++) {
+                    output[index++] = boxes[i][j];
+                }
+            }
+
+            for (int i = 0; i < n; i++) {
+                codes[i] = output[i];
+            }
+
+            cout << "Array after round " << round << ": ";
+
+            for (int i = 0; i < n; i++) {
+                cout << codes[i] << " ";
+            }
+
+            cout << endl;
+
+            exp *= 10;
+            round++;
+        }
+
+        cout << "\nFINAL SORTED LIST\n";
+
+        for (int i = 0; i < n; i++) {
+            cout << codes[i] << " ";
+        }
+
+        cout << endl;
+    }
+
+    void printDuplicates() {
+        cout << "\nDUPLICATE CODES\n";
+
+        bool found = false;
+
+        for (int i = 0; i < n - 1; i++) {
+            if (codes[i] == codes[i + 1]) {
+                if (i == 0 || codes[i] != codes[i - 1]) {
+                    cout << codes[i] << endl;
+                    found = true;
+                }
+            }
+        }
+
+        if (!found) {
+            cout << "No duplicate codes found.\n";
+        }
+    }
+};
+
+int main() {
+    Courier c;
+    c.input();
+
+    return 0;
+}

@@ -1,0 +1,120 @@
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Patient {
+public:
+    string name;
+    int urgency;
+    int arrival;
+};
+
+int comparisons = 0;
+
+void printPatients(Patient p[], int start, int end) {
+    for (int i = start; i <= end; i++) {
+        cout << p[i].name << "(" << p[i].urgency
+             << ", Arrival: " << p[i].arrival << ") ";
+    }
+    cout << endl;
+}
+
+void merge(Patient p[], int left, int mid, int right) {
+    Patient temp[100];
+
+    int i = left;
+    int j = mid + 1;
+    int k = 0;
+
+    while (i <= mid && j <= right) {
+        comparisons++;
+
+        if (p[i].urgency > p[j].urgency ||
+           (p[i].urgency == p[j].urgency &&
+            p[i].arrival < p[j].arrival)) {
+            temp[k++] = p[i++];
+        }
+        else {
+            temp[k++] = p[j++];
+        }
+    }
+
+    while (i <= mid) {
+        temp[k++] = p[i++];
+    }
+
+    while (j <= right) {
+        temp[k++] = p[j++];
+    }
+
+    for (int x = 0; x < k; x++) {
+        p[left + x] = temp[x];
+    }
+
+    cout << "\nJOIN: ";
+    printPatients(p, left, right);
+}
+
+void mergeSort(Patient p[], int left, int right) {
+    if (left >= right) {
+        return;
+    }
+
+    int mid = (left + right) / 2;
+
+    cout << "\nCUT:";
+    cout << "\nLeft Part: ";
+    printPatients(p, left, mid);
+
+    cout << "Right Part: ";
+    printPatients(p, mid + 1, right);
+
+    mergeSort(p, left, mid);
+    mergeSort(p, mid + 1, right);
+
+    merge(p, left, mid, right);
+}
+
+int main() {
+    Patient p[100];
+    int n;
+
+    cout << "Enter number of patients: ";
+    cin >> n;
+
+    if (n < 1 || n > 100) {
+        cout << "Invalid number of patients!";
+        return 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+        cout << "\nEnter patient name: ";
+        cin >> p[i].name;
+
+        cout << "Enter urgency (1-100): ";
+        cin >> p[i].urgency;
+
+        cout << "Enter arrival time: ";
+        cin >> p[i].arrival;
+
+        if (p[i].urgency < 1 || p[i].urgency > 100) {
+            cout << "Invalid urgency!";
+            return 0;
+        }
+    }
+
+    cout << "\nMERGE SORT PROCESS\n";
+
+    mergeSort(p, 0, n - 1);
+
+    cout << "\nFINAL PATIENT LIST\n";
+    printPatients(p, 0, n - 1);
+
+    cout << "\nTotal Comparisons: " << comparisons << endl;
+
+    cout << "First patient to see the doctor: "
+         << p[0].name << endl;
+
+    return 0;
+}

@@ -1,0 +1,126 @@
+
+#include <iostream>
+using namespace std;
+
+class Concert {
+public:
+    int tickets[100];
+    int n;
+
+    void input() {
+        cout << "Enter number of tickets: ";
+        cin >> n;
+
+        if (n < 1 || n > 100) {
+            cout << "Invalid number of tickets!";
+            return;
+        }
+
+        cout << "Enter ticket numbers:\n";
+
+        for (int i = 0; i < n; i++) {
+            cin >> tickets[i];
+
+            if (tickets[i] < 100 || tickets[i] > 999999) {
+                cout << "Invalid ticket number!";
+                return;
+            }
+        }
+
+        radixSort();
+        printDuplicates();
+    }
+
+    void radixSort() {
+        int max = tickets[0];
+
+        for (int i = 1; i < n; i++) {
+            if (tickets[i] > max) {
+                max = tickets[i];
+            }
+        }
+
+        int output[100];
+        int exp = 1;
+        int round = 1;
+
+        while (max / exp > 0) {
+            int trays[10][100];
+            int count[10] = {0};
+
+            for (int i = 0; i < n; i++) {
+                int digit = (tickets[i] / exp) % 10;
+                trays[digit][count[digit]++] = tickets[i];
+            }
+
+            cout << "\n===== ROUND " << round << " =====\n";
+
+            for (int i = 9; i >= 0; i--) {
+                cout << "Tray " << i << ": ";
+
+                for (int j = 0; j < count[i]; j++) {
+                    cout << trays[i][j] << " ";
+                }
+
+                cout << endl;
+            }
+
+            int index = 0;
+
+            for (int i = 9; i >= 0; i--) {
+                for (int j = 0; j < count[i]; j++) {
+                    output[index++] = trays[i][j];
+                }
+            }
+
+            for (int i = 0; i < n; i++) {
+                tickets[i] = output[i];
+            }
+
+            cout << "Array after round " << round << ": ";
+
+            for (int i = 0; i < n; i++) {
+                cout << tickets[i] << " ";
+            }
+
+            cout << endl;
+
+            exp *= 10;
+            round++;
+        }
+
+        cout << "\nFINAL SORTED LIST\n";
+
+        for (int i = 0; i < n; i++) {
+            cout << tickets[i] << " ";
+        }
+
+        cout << endl;
+    }
+
+    void printDuplicates() {
+        cout << "\nFAKE / DUPLICATE TICKETS\n";
+
+        bool found = false;
+
+        for (int i = 0; i < n - 1; i++) {
+            if (tickets[i] == tickets[i + 1]) {
+                if (i == 0 || tickets[i] != tickets[i - 1]) {
+                    cout << tickets[i] << endl;
+                    found = true;
+                }
+            }
+        }
+
+        if (!found) {
+            cout << "No duplicate tickets found.\n";
+        }
+    }
+};
+
+int main() {
+    Concert c;
+    c.input();
+
+    return 0;
+}

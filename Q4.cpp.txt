@@ -1,0 +1,134 @@
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Player {
+public:
+    string name;
+    int runs;
+    int matches;
+};
+
+int comparisons = 0;
+int matchTies = 0;
+
+void printPlayers(Player p[], int start, int end) {
+    for (int i = start; i <= end; i++) {
+        cout << p[i].name << "(" << p[i].runs
+             << ", " << p[i].matches << ") ";
+    }
+    cout << endl;
+}
+
+void merge(Player p[], int left, int mid, int right) {
+    Player temp[100];
+
+    int i = left;
+    int j = mid + 1;
+    int k = 0;
+
+    while (i <= mid && j <= right) {
+        comparisons++;
+
+        if (p[i].runs > p[j].runs) {
+            temp[k++] = p[i++];
+        }
+        else if (p[i].runs < p[j].runs) {
+            temp[k++] = p[j++];
+        }
+        else {
+            if (p[i].matches < p[j].matches) {
+                matchTies++;
+                temp[k++] = p[i++];
+            }
+            else if (p[i].matches > p[j].matches) {
+                matchTies++;
+                temp[k++] = p[j++];
+            }
+            else {
+                temp[k++] = p[i++];
+            }
+        }
+    }
+
+    while (i <= mid) {
+        temp[k++] = p[i++];
+    }
+
+    while (j <= right) {
+        temp[k++] = p[j++];
+    }
+
+    for (int x = 0; x < k; x++) {
+        p[left + x] = temp[x];
+    }
+
+    cout << "\nJOIN: ";
+    printPlayers(p, left, right);
+}
+
+void mergeSort(Player p[], int left, int right) {
+    if (left >= right) {
+        return;
+    }
+
+    int mid = (left + right) / 2;
+
+    cout << "\nCUT:";
+
+    cout << "\nLeft Part: ";
+    printPlayers(p, left, mid);
+
+    cout << "Right Part: ";
+    printPlayers(p, mid + 1, right);
+
+    mergeSort(p, left, mid);
+    mergeSort(p, mid + 1, right);
+
+    merge(p, left, mid, right);
+}
+
+int main() {
+    Player p[100];
+    int n;
+
+    cout << "Enter number of players: ";
+    cin >> n;
+
+    if (n < 1 || n > 100) {
+        cout << "Invalid number of players!";
+        return 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+        cout << "\nEnter player name: ";
+        cin >> p[i].name;
+
+        cout << "Enter total runs: ";
+        cin >> p[i].runs;
+
+        cout << "Enter matches played: ";
+        cin >> p[i].matches;
+    }
+
+    cout << "\nMERGE SORT PROCES\n";
+
+    mergeSort(p, 0, n - 1);
+
+    cout << "\nFINAL RANKING\n";
+
+    for (int i = 0; i < n; i++) {
+        cout << i + 1 << ". "
+             << p[i].name
+             << " | Runs: " << p[i].runs
+             << " | Matches: " << p[i].matches
+             << endl;
+    }
+    cout << "\nTotal Comparisons: " << comparisons << endl;
+
+    cout << "Ties decided using matches played: "
+         << matchTies << endl;
+
+    return 0;
+}
